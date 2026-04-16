@@ -15,10 +15,14 @@ import {
   X,
   FileText,
   Clock,
-  ShieldAlert
+  ShieldAlert,
+  Instagram,
+  Facebook,
+  Linkedin,
+  Loader2
 } from 'lucide-react';
 
-// --- ANIMATION VARIANTS ---
+// --- VARIANTES DE ANIMACIÓN ---
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 30 },
@@ -42,6 +46,11 @@ const tabTransition = {
   transition: { duration: 0.4 }
 };
 
+const mobileMenuVariants = {
+  closed: { opacity: 0, height: 0, transition: { duration: 0.3, ease: "easeInOut" } },
+  open: { opacity: 1, height: "auto", transition: { duration: 0.3, ease: "easeInOut" } }
+};
+
 const App = () => {
   const [activeTab, setActiveTab] = useState('home');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -50,8 +59,7 @@ const App = () => {
     nombre: '',
     email: '',
     empresa: '',
-    servicio: 'Logística Integral',
-    temperatura: '-80°C'
+    mensaje: ''
   });
 
   useEffect(() => {
@@ -64,22 +72,23 @@ const App = () => {
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
+      setIsMenuOpen(false);
     }
   };
 
-  const NavItem = ({ id, label }) => (
+  const NavItem = ({ id, label, mobile = false }) => (
     <button
       onClick={() => {
         setActiveTab(id);
         setIsMenuOpen(false);
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }}
-      className="relative px-4 py-2 text-sm font-medium tracking-wide transition-colors"
+      className={`relative px-4 py-2 text-sm font-medium tracking-wide transition-colors ${mobile ? 'text-left w-full py-4 border-b border-white/5' : ''}`}
     >
       <span className={activeTab === id ? 'text-cyan-400' : 'text-gray-400 hover:text-white'}>
         {label}
       </span>
-      {activeTab === id && (
+      {!mobile && activeTab === id && (
         <motion.div 
           layoutId="navUnderline"
           className="absolute bottom-0 left-0 w-full h-0.5 bg-cyan-400"
@@ -91,7 +100,7 @@ const App = () => {
   return (
     <div className="min-h-screen bg-[#020408] text-gray-100 font-sans selection:bg-cyan-500/30 overflow-x-hidden">
       
-      {/* Background Orbs */}
+      {/* Orbes de Fondo */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <motion.div 
           animate={{ 
@@ -113,8 +122,8 @@ const App = () => {
         />
       </div>
 
-      {/* Navigation */}
-      <nav className={`fixed w-full z-50 transition-all duration-500 ${scrolled ? 'bg-[#05080f]/90 backdrop-blur-xl border-b border-white/10 py-3 shadow-2xl' : 'bg-transparent py-6'}`}>
+      {/* Navegación */}
+      <nav className={`fixed w-full z-50 transition-all duration-500 ${scrolled || isMenuOpen ? 'bg-[#05080f]/95 backdrop-blur-xl border-b border-white/10 py-3 shadow-2xl' : 'bg-transparent py-6'}`}>
         <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
           <motion.div 
             initial={{ opacity: 0, x: -20 }}
@@ -130,6 +139,7 @@ const App = () => {
             </span>
           </motion.div>
 
+          {/* Nav de Escritorio */}
           <div className="hidden md:flex items-center gap-2">
             <NavItem id="home" label="HOME" />
             <NavItem id="biosystems" label="BIOSYSTEMS" />
@@ -144,13 +154,47 @@ const App = () => {
             </motion.button>
           </div>
 
-          <button className="md:hidden text-white" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            {isMenuOpen ? <X size={28} /> : <Menu size={28} />}
+          {/* Botón de Menú Móvil */}
+          <button 
+            className="md:hidden text-white p-2 focus:outline-none" 
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            {isMenuOpen ? <X size={28} className="text-cyan-400" /> : <Menu size={28} />}
           </button>
         </div>
+
+        {/* Contenido del Menú Móvil */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div 
+              initial="closed"
+              animate="open"
+              exit="closed"
+              variants={mobileMenuVariants}
+              className="md:hidden bg-[#05080f] overflow-hidden px-6"
+            >
+              <div className="flex flex-col py-6 space-y-2">
+                <NavItem id="home" label="HOME" mobile={true} />
+                <NavItem id="biosystems" label="BIOSYSTEMS" mobile={true} />
+                <NavItem id="cryobank" label="CRYOBANK" mobile={true} />
+                <button 
+                  onClick={() => scrollToSection('contact')}
+                  className="w-full mt-6 py-4 bg-white text-black font-black rounded-2xl hover:bg-cyan-400 transition-all uppercase text-xs tracking-widest shadow-xl"
+                >
+                  Contactar Especialista
+                </button>
+                <div className="pt-8 pb-4 flex justify-center gap-8 border-t border-white/5">
+                   <Instagram className="text-gray-500" size={20} />
+                   <Facebook className="text-gray-500" size={20} />
+                   <Linkedin className="text-gray-500" size={20} />
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
 
-      {/* Content */}
+      {/* Contenido */}
       <main className="relative z-10">
         <AnimatePresence mode="wait">
           <motion.div
@@ -184,7 +228,7 @@ const App = () => {
               Líderes en logística de ultra-congelación y custodia de activos biológicos. Asegurando el futuro de la investigación clínica mediante tecnología avanzada.
             </p>
             <div className="flex gap-4">
-              {[Globe, Activity, Mail].map((Icon, i) => (
+              {[Instagram, Facebook, Linkedin, Mail].map((Icon, i) => (
                 <motion.div 
                   key={i}
                   whileHover={{ y: -5, borderColor: '#22d3ee' }}
@@ -196,7 +240,7 @@ const App = () => {
             </div>
           </div>
           <div>
-            <h4 className="text-white font-bold mb-8 tracking-widest text-xs uppercase">Servicios</h4>
+            <h4 className="text-white font-bold mb-8 tracking-widest text-xs uppercase text-gray-400">Servicios</h4>
             <ul className="space-y-4 text-gray-500 text-sm">
               {['RIGHI Biosystems', 'RIGHI Cryobank', 'Logística Pharma', 'Backup de Emergencia'].map(item => (
                 <li key={item} className="hover:text-cyan-400 cursor-pointer transition-colors flex items-center gap-2 group">
@@ -207,7 +251,7 @@ const App = () => {
             </ul>
           </div>
           <div>
-            <h4 className="text-white font-bold mb-8 tracking-widest text-xs uppercase">Compliance</h4>
+            <h4 className="text-white font-bold mb-8 tracking-widest text-xs uppercase text-gray-400">Compliance</h4>
             <ul className="space-y-4 text-gray-500 text-sm">
               <li className="flex items-center gap-2"><CheckCircle2 size={14} className="text-cyan-500" /> GMP Certified</li>
               <li className="flex items-center gap-2"><CheckCircle2 size={14} className="text-cyan-500" /> GDP Compliant</li>
@@ -220,7 +264,7 @@ const App = () => {
   );
 };
 
-// --- SUB-VIEWS ---
+// --- SUB-VISTAS ---
 
 const HomeView = ({ setActiveTab, scrollToSection }) => (
   <>
@@ -345,7 +389,7 @@ const HomeView = ({ setActiveTab, scrollToSection }) => (
       </div>
     </section>
 
-    {/* Service Cards Staggered */}
+    {/* Cartas de Servicio */}
     <section className="py-40 max-w-7xl mx-auto px-6">
        <motion.div 
           initial="hidden"
@@ -414,9 +458,9 @@ const BiosystemsView = ({ scrollToSection }) => (
         transition={{ duration: 0.8 }}
       >
         <h2 className="text-xs font-bold text-cyan-500 tracking-[0.4em] uppercase mb-6">Unidad de Monitoreo</h2>
-        <h3 className="text-5xl md:text-6xl font-black mb-8 leading-tight">RIGHI <br/><span className="text-cyan-400">BIOSYSTEMS</span></h3>
-        <p className="text-gray-400 text-lg mb-12 leading-relaxed">
-          Nuestra tecnología patentada BIOSYSTEMS permite el seguimiento inteligente de cada vial. Sensores de grado aeroespacial que transmiten datos cifrados directamente a tu panel de control central.
+        <h3 className="text-5xl md:text-6xl font-black mb-8 leading-tight text-white uppercase tracking-tighter">RIGHI <span className="text-cyan-400">BIOSYSTEMS</span></h3>
+        <p className="text-gray-400 text-lg mb-12 leading-relaxed italic">
+          "Tus muestras nunca están solas. BIOSYSTEMS es el sistema de ojos digitales que vigila la integridad de tu carga en tránsito o in situ."
         </p>
         <div className="grid grid-cols-2 gap-6">
           {[
@@ -426,7 +470,7 @@ const BiosystemsView = ({ scrollToSection }) => (
             { label: 'Escalable', desc: 'Desde 1 vial hasta biobancos enteros' }
           ].map((item, i) => (
             <div key={i} className="p-5 bg-white/5 rounded-2xl border border-white/5">
-              <h5 className="font-bold text-white text-sm mb-1">{item.label}</h5>
+              <h5 className="font-bold text-white text-sm mb-1 uppercase tracking-tight">{item.label}</h5>
               <p className="text-[10px] text-gray-500 uppercase tracking-wider">{item.desc}</p>
             </div>
           ))}
@@ -484,9 +528,9 @@ const CryobankView = ({ scrollToSection }) => (
       animate={{ opacity: 1, y: 0 }}
       className="text-center mb-32"
     >
-      <h2 className="text-xs font-bold text-blue-500 tracking-[0.4em] uppercase mb-6">Custodia de Alta Seguridad</h2>
-      <h3 className="text-5xl md:text-7xl font-black mb-8 tracking-tight">RIGHI <span className="text-blue-500">CRYOBANK</span></h3>
-      <p className="max-w-2xl mx-auto text-gray-500 text-lg leading-relaxed">
+      <h2 className="text-xs font-bold text-blue-500 tracking-[0.4em] uppercase mb-6 text-blue-400">Custodia de Alta Seguridad</h2>
+      <h3 className="text-5xl md:text-7xl font-black mb-8 tracking-tight text-white uppercase tracking-tighter">RIGHI <span className="text-blue-500">CRYOBANK</span></h3>
+      <p className="max-w-2xl mx-auto text-gray-500 text-lg leading-relaxed italic">
         Nuestra planta de almacenamiento centralizada ofrece condiciones de criopreservación inalterables. Redundancia operativa del 100% para activos biológicos críticos.
       </p>
     </motion.div>
@@ -507,7 +551,7 @@ const CryobankView = ({ scrollToSection }) => (
           <div className="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-500 mb-8 group-hover:scale-110 transition-transform">
             {box.icon}
           </div>
-          <h4 className="text-xl font-bold mb-6">{box.title}</h4>
+          <h4 className="text-xl font-bold mb-6 text-white uppercase tracking-tight">{box.title}</h4>
           <ul className="space-y-4">
             {box.list.map((item, idx) => (
               <li key={idx} className="flex items-center gap-3 text-xs text-gray-500">
@@ -524,14 +568,14 @@ const CryobankView = ({ scrollToSection }) => (
       className="p-12 md:p-20 rounded-[4rem] border border-blue-500/20 flex flex-col md:row items-center justify-between gap-12 bg-blue-500/5 backdrop-blur-sm"
     >
       <div className="max-w-md">
-        <h4 className="text-3xl font-bold mb-4">Plan de Backup Inmediato</h4>
-        <p className="text-gray-500 text-sm leading-relaxed">
+        <h4 className="text-3xl font-bold mb-4 uppercase tracking-tighter">Plan de Backup Inmediato</h4>
+        <p className="text-gray-500 text-sm leading-relaxed font-medium">
           ¿Tu equipo ha fallado? Tenemos espacio reservado para emergencias 24/7. Traslado y custodia garantizada en menos de 90 minutos.
         </p>
       </div>
       <button 
         onClick={() => scrollToSection('contact')}
-        className="px-10 py-5 bg-blue-600 text-white font-black rounded-2xl hover:bg-blue-500 transition-all shadow-xl shadow-blue-500/40 uppercase tracking-widest text-xs"
+        className="px-10 py-5 bg-blue-600 text-white font-black rounded-2xl hover:bg-blue-500 transition-all shadow-xl shadow-blue-500/40 uppercase tracking-widest text-[10px]"
       >
         ACTIVAR PROTOCOLO EMERGENCIA
       </button>
@@ -561,7 +605,7 @@ const FAQSection = () => {
       <motion.h2 
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
-        className="text-4xl font-bold mb-16 text-center"
+        className="text-4xl font-bold mb-16 text-center text-white uppercase tracking-tighter"
       >
         Preguntas Frecuentes
       </motion.h2>
@@ -577,7 +621,7 @@ const FAQSection = () => {
               onClick={() => setOpenIdx(openIdx === idx ? -1 : idx)}
               className="w-full p-8 text-left flex justify-between items-center hover:bg-white/5 transition-colors"
             >
-              <span className="font-bold text-lg">{faq.q}</span>
+              <span className="font-bold text-lg text-gray-200">{faq.q}</span>
               <ChevronDown className={`transition-transform duration-500 ${openIdx === idx ? 'rotate-180' : ''}`} />
             </button>
             <AnimatePresence>
@@ -588,7 +632,7 @@ const FAQSection = () => {
                   exit={{ height: 0, opacity: 0 }}
                   className="overflow-hidden"
                 >
-                  <p className="p-8 pt-0 text-gray-400 text-sm leading-relaxed border-t border-white/5 pt-6">
+                  <p className="p-8 pt-0 text-gray-400 text-sm leading-relaxed border-t border-white/5 pt-6 italic">
                     {faq.a}
                   </p>
                 </motion.div>
@@ -601,91 +645,185 @@ const FAQSection = () => {
   );
 };
 
-const ContactSection = ({ formData, setFormData }) => (
-  <section id="contact" className="py-40 relative">
-    <div className="max-w-7xl mx-auto px-6">
-      <div className="grid lg:grid-cols-2 gap-24 items-center">
-        <motion.div 
-          initial={{ opacity: 0, x: -50 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-        >
-          <h2 className="text-6xl font-black mb-8 tracking-tighter leading-tight">
-            Asegura tu <br/><span className="text-cyan-400 underline decoration-cyan-500/30 underline-offset-8">patrimonio científico.</span>
-          </h2>
-          <p className="text-gray-400 text-lg mb-12 max-w-md">
-            Un especialista técnico evaluará tu cadena de frío en una sesión de 15 minutos sin cargo.
-          </p>
-          <div className="space-y-8">
-            <div className="flex items-center gap-6 group">
-              <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center text-cyan-400 group-hover:bg-cyan-500 group-hover:text-white transition-all"><Mail /></div>
-              <div>
-                <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest">Email Corporativo</p>
-                <p className="text-white font-bold">solutions@righi.tech</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-6 group">
-              <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center text-cyan-400 group-hover:bg-cyan-500 group-hover:text-white transition-all"><Globe /></div>
-              <div>
-                <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest">Centro Logístico</p>
-                <p className="text-white font-bold">Global Cryo-Center Hub 01</p>
-              </div>
-            </div>
-          </div>
-        </motion.div>
+const ContactSection = ({ formData, setFormData }) => {
+  const [submissionStatus, setSubmissionStatus] = useState("idle"); // idle, sending, success, error
 
-        <motion.div 
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="bg-[#0a0f1a] p-12 md:p-16 rounded-[4rem] border border-white/10 shadow-3xl shadow-cyan-500/5 relative overflow-hidden"
-        >
-          <div className="absolute top-0 right-0 p-12 opacity-5"><ShieldCheck size={120} /></div>
-          <form onSubmit={(e) => { e.preventDefault(); alert('Solicitud enviada con éxito'); }} className="relative z-10 space-y-8">
-            <div className="grid md:grid-cols-2 gap-8">
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Nombre y Apellido</label>
-                <input type="text" className="w-full bg-white/5 border-b border-white/20 px-0 py-3 focus:border-cyan-500 outline-none transition-all text-white font-medium" placeholder="Dr. Alan Turing" required />
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmissionStatus("sending");
+
+    try {
+      // Usamos fetch para enviar los datos a Formspree (lucas1882@gmail.com)
+      const response = await fetch("https://formspree.io/f/lucas1882@gmail.com", {
+        method: "POST",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: formData.nombre,
+          email: formData.email,
+          company: formData.empresa,
+          message: formData.mensaje
+        })
+      });
+
+      if (response.ok) {
+        setSubmissionStatus("success");
+        setFormData({ nombre: '', email: '', empresa: '', mensaje: '' });
+      } else {
+        setSubmissionStatus("error");
+      }
+    } catch (error) {
+      setSubmissionStatus("error");
+    }
+  };
+
+  return (
+    <section id="contact" className="py-40 relative">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid lg:grid-cols-2 gap-24 items-center">
+          <motion.div 
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-6xl font-black mb-8 tracking-tighter leading-tight text-white uppercase">
+              Asegura tu <br/><span className="text-cyan-400 underline decoration-cyan-500/30 underline-offset-8">patrimonio científico.</span>
+            </h2>
+            <p className="text-gray-400 text-lg mb-12 max-w-md leading-relaxed">
+              Un especialista técnico evaluará tu cadena de frío en una sesión de 15 minutos sin cargo.
+            </p>
+            <div className="space-y-8">
+              <div className="flex items-center gap-6 group cursor-pointer">
+                <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center text-cyan-400 group-hover:bg-cyan-500 group-hover:text-white transition-all shadow-xl">
+                  <Mail size={24} />
+                </div>
+                <div>
+                  <p className="text-[10px] text-gray-600 font-black uppercase tracking-widest mb-1">Email Corporativo</p>
+                  <p className="text-white font-black tracking-tight">solutions@righi.tech</p>
+                </div>
               </div>
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Email de Empresa</label>
-                <input type="email" className="w-full bg-white/5 border-b border-white/20 px-0 py-3 focus:border-cyan-500 outline-none transition-all text-white font-medium" placeholder="alan@pharma.com" required />
+              <div className="flex items-center gap-6 group cursor-pointer">
+                <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center text-cyan-400 group-hover:bg-cyan-500 group-hover:text-white transition-all shadow-xl">
+                  <Globe size={24} />
+                </div>
+                <div>
+                  <p className="text-[10px] text-gray-600 font-black uppercase tracking-widest mb-1">Centro Logístico</p>
+                  <p className="text-white font-black tracking-tight">Global Cryo-Center Hub 01</p>
+                </div>
               </div>
             </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Empresa / Institución</label>
-              <input type="text" className="w-full bg-white/5 border-b border-white/20 px-0 py-3 focus:border-cyan-500 outline-none transition-all text-white font-medium" placeholder="Global Genetics Inc." required />
-            </div>
-            <div className="grid md:grid-cols-2 gap-8">
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Unidad de Interés</label>
-                <select className="w-full bg-transparent border-b border-white/20 px-0 py-3 focus:border-cyan-500 outline-none transition-all text-white font-medium">
-                  <option className="bg-[#0a0f1a]">BIOSYSTEMS</option>
-                  <option className="bg-[#0a0f1a]">CRYOBANK</option>
-                  <option className="bg-[#0a0f1a]">Logística Pharma</option>
-                </select>
-              </div>
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Temperatura</label>
-                <select className="w-full bg-transparent border-b border-white/20 px-0 py-3 focus:border-cyan-500 outline-none transition-all text-white font-medium">
-                  <option className="bg-[#0a0f1a]">-80°C (Ultra)</option>
-                  <option className="bg-[#0a0f1a]">-196°C (LN2)</option>
-                  <option className="bg-[#0a0f1a]">+2°C / +8°C</option>
-                </select>
-              </div>
-            </div>
-            <motion.button 
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="w-full py-6 bg-cyan-500 text-white font-black rounded-3xl hover:bg-cyan-400 transition-all shadow-xl shadow-cyan-500/20 uppercase tracking-[0.2em] text-xs"
-            >
-              Solicitar Consultoría Técnica
-            </motion.button>
-          </form>
-        </motion.div>
+          </motion.div>
+
+          <motion.div 
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="bg-[#0a0f1a] p-12 md:p-16 rounded-[4.5rem] border border-white/10 shadow-3xl shadow-cyan-500/5 relative overflow-hidden"
+          >
+            <div className="absolute top-0 right-0 p-12 opacity-5"><ShieldCheck size={120} /></div>
+            
+            {submissionStatus === "success" ? (
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="relative z-10 text-center py-20"
+              >
+                <div className="w-20 h-20 bg-cyan-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <CheckCircle2 size={40} className="text-cyan-400" />
+                </div>
+                <h3 className="text-2xl font-bold mb-4 uppercase tracking-tighter">Mensaje Enviado</h3>
+                <p className="text-gray-400 mb-8">Gracias por contactarnos. Un especialista técnico se comunicará contigo a la brevedad.</p>
+                <button 
+                  onClick={() => setSubmissionStatus("idle")}
+                  className="text-cyan-400 font-bold uppercase text-xs tracking-widest hover:underline"
+                >
+                  Enviar otro mensaje
+                </button>
+              </motion.div>
+            ) : (
+              <form onSubmit={handleSubmit} className="relative z-10 space-y-10">
+                <div className="grid md:grid-cols-2 gap-10">
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest px-4">Nombre y Apellido</label>
+                    <input 
+                      type="text" 
+                      name="name"
+                      className="w-full bg-transparent border-b border-white/20 px-4 py-3 outline-none text-white font-bold placeholder-gray-700" 
+                      placeholder="Dr. Alan Turing" 
+                      value={formData.nombre}
+                      onChange={(e) => setFormData({...formData, nombre: e.target.value})}
+                      required 
+                    />
+                  </div>
+                  <div className="space-y-3">
+                    <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest px-4">Email Corporativo</label>
+                    <input 
+                      type="email" 
+                      name="email"
+                      className="w-full bg-transparent border-b border-white/20 px-4 py-3 outline-none text-white font-bold placeholder-gray-700" 
+                      placeholder="alan@pharma.com" 
+                      value={formData.email}
+                      onChange={(e) => setFormData({...formData, email: e.target.value})}
+                      required 
+                    />
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest px-4">Institución / Empresa</label>
+                  <input 
+                    type="text" 
+                    name="company"
+                    className="w-full bg-transparent border-b border-white/20 px-4 py-3 outline-none text-white font-bold placeholder-gray-700" 
+                    placeholder="Global Genetics Inc." 
+                    value={formData.empresa}
+                    onChange={(e) => setFormData({...formData, empresa: e.target.value})}
+                    required 
+                  />
+                </div>
+                
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest px-4">Detalles de su Requerimiento</label>
+                  <textarea 
+                    name="message"
+                    className="w-full bg-transparent border-b border-white/20 px-4 py-3 outline-none text-white font-bold placeholder-gray-700 min-h-[120px] resize-none"
+                    placeholder="Describa brevemente la unidad de interés, rango de temperatura y volumen de muestras..."
+                    value={formData.mensaje}
+                    onChange={(e) => setFormData({...formData, mensaje: e.target.value})}
+                    required
+                  />
+                </div>
+
+                <div className="relative">
+                  {submissionStatus === "error" && (
+                    <p className="text-red-500 text-[10px] uppercase font-bold mb-4 tracking-widest">
+                      Ocurrió un error. Por favor, intente nuevamente.
+                    </p>
+                  )}
+                  <motion.button 
+                    disabled={submissionStatus === "sending"}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="w-full py-6 bg-cyan-500 text-white font-black rounded-[2rem] hover:bg-cyan-400 transition-all shadow-2xl shadow-cyan-500/30 uppercase tracking-[0.2em] text-[11px] flex items-center justify-center gap-2"
+                  >
+                    {submissionStatus === "sending" ? (
+                      <>
+                        <Loader2 size={16} className="animate-spin" />
+                        ENVIANDO...
+                      </>
+                    ) : (
+                      "Solicitar Consultoría Técnica"
+                    )}
+                  </motion.button>
+                </div>
+              </form>
+            )}
+          </motion.div>
+        </div>
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 export default App;
