@@ -16,11 +16,21 @@ import {
   FileText,
   Clock,
   ShieldAlert,
-  Instagram,
-  Facebook,
-  Linkedin,
   Loader2
 } from 'lucide-react';
+
+// Iconos personalizados para evitar errores de exportación en lucide-react
+const InstagramIcon = ({ size = 24, className = "" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
+);
+
+const FacebookIcon = ({ size = 24, className = "" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+);
+
+const LinkedinIcon = ({ size = 24, className = "" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+);
 
 // --- VARIANTES DE ANIMACIÓN ---
 
@@ -184,9 +194,9 @@ const App = () => {
                   Contactar Especialista
                 </button>
                 <div className="pt-8 pb-4 flex justify-center gap-8 border-t border-white/5">
-                   <Instagram className="text-gray-500" size={20} />
-                   <Facebook className="text-gray-500" size={20} />
-                   <Linkedin className="text-gray-500" size={20} />
+                   <InstagramIcon className="text-gray-500" size={20} />
+                   <FacebookIcon className="text-gray-500" size={20} />
+                   <LinkedinIcon className="text-gray-500" size={20} />
                 </div>
               </div>
             </motion.div>
@@ -228,15 +238,30 @@ const App = () => {
               Líderes en logística de ultra-congelación y custodia de activos biológicos. Asegurando el futuro de la investigación clínica mediante tecnología avanzada.
             </p>
             <div className="flex gap-4">
-              {[Instagram, Facebook, Linkedin, Mail].map((Icon, i) => (
-                <motion.div 
-                  key={i}
-                  whileHover={{ y: -5, borderColor: '#22d3ee' }}
-                  className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-cyan-400 cursor-pointer transition-all"
-                >
-                  <Icon size={18} />
-                </motion.div>
-              ))}
+              <motion.div 
+                whileHover={{ y: -5, borderColor: '#22d3ee' }}
+                className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-cyan-400 cursor-pointer transition-all"
+              >
+                <InstagramIcon size={18} />
+              </motion.div>
+              <motion.div 
+                whileHover={{ y: -5, borderColor: '#22d3ee' }}
+                className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-cyan-400 cursor-pointer transition-all"
+              >
+                <FacebookIcon size={18} />
+              </motion.div>
+              <motion.div 
+                whileHover={{ y: -5, borderColor: '#22d3ee' }}
+                className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-cyan-400 cursor-pointer transition-all"
+              >
+                <LinkedinIcon size={18} />
+              </motion.div>
+              <motion.div 
+                whileHover={{ y: -5, borderColor: '#22d3ee' }}
+                className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center text-gray-400 hover:text-cyan-400 cursor-pointer transition-all"
+              >
+                <Mail size={18} />
+              </motion.div>
             </div>
           </div>
           <div>
